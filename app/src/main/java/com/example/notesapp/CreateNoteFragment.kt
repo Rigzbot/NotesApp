@@ -2,6 +2,7 @@ package com.example.notesapp
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Patterns
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -218,7 +220,7 @@ class CreateNoteFragment : BaseFragment(),
 
     //create dialog to confirm delete note and then execute
     private fun createDeleteDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        AlertDialog.Builder(ContextThemeWrapper(context, R.style.AlertDialogCustom))
             .setTitle(getString(R.string.deleteNote))  // to set title of the alert
             .setMessage(getString(R.string.deleteConfirm))  // to set message
             .setCancelable(false)  // cannot go back from the alert
