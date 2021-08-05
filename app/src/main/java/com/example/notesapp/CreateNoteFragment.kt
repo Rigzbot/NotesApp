@@ -23,7 +23,6 @@ import com.example.notesapp.database.NotesDatabase
 import com.example.notesapp.entities.Notes
 import com.example.notesapp.util.NoteBottomSheetFragment
 import kotlinx.android.synthetic.main.fragment_create_note.*
-import kotlinx.android.synthetic.main.fragment_create_note.tvDateTime
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions

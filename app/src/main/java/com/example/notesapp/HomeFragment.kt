@@ -102,7 +102,6 @@ class HomeFragment : BaseFragment() {
 
             replaceFragment(fragment,false)
         }
-
     }
 
     //animation for fragment change
