@@ -28,6 +28,8 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 
 class CreateNoteFragment : BaseFragment(),
     EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
@@ -105,6 +107,12 @@ class CreateNoteFragment : BaseFragment(),
                     } else {
                         imgUrlDelete.visibility = View.GONE
                         layoutWebUrl.visibility = View.GONE
+                    }
+
+                    //delete note
+                    fabBtnDeleteNote.visibility = View.VISIBLE
+                    fabBtnDeleteNote.setOnClickListener {
+                        createDeleteDialog()
                     }
                 }
             }
@@ -203,6 +211,30 @@ class CreateNoteFragment : BaseFragment(),
                 layoutImage.visibility = View.GONE
                 imgNote.visibility = View.GONE
                 tvWebLink.visibility = View.GONE
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+        }
+    }
+
+    //create dialog to confirm delete note and then execute
+    private fun createDeleteDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.deleteNote))  // to set title of the alert
+            .setMessage(getString(R.string.deleteConfirm))  // to set message
+            .setCancelable(false)  // cannot go back from the alert
+            .setNegativeButton(getString(R.string.cancel).uppercase()) { dialog, _ ->   // code if negative option is chosen
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.yes).uppercase()) { _, _ ->  // code if positive option is chosen
+                deleteNote()
+            }
+            .show()
+    }
+
+    private fun deleteNote() {
+        launch {
+            context?.let {
+                NotesDatabase.getDatabase(it).noteDao().deleteSpecificNote(noteId)
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }
