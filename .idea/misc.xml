@@ -3,11 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.37962962962962965" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.37962962962962965" />
         <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/activity_main.xml" value="0.18085106382978725" />
         <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_create_note.xml" value="0.33" />
         <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_home.xml" value="0.33" />
         <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_notes_bottom_sheet.xml" value="0.33" />
         <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/item_rv_notes.xml" value="0.383634431455898" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.37962962962962965" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.37962962962962965" />
       </map>
     </option>
   </component>
