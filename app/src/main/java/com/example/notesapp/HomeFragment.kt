@@ -23,7 +23,6 @@ class HomeFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
         }
     }
 
@@ -51,10 +50,10 @@ class HomeFragment : BaseFragment() {
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-        //getting all notes in launch coroutine scope
+        //getting all notes in home screen
         launch {
             context?.let {
-                var notes = NotesDatabase.getDatabase(it).noteDao().getAllNotes()
+                val notes = NotesDatabase.getDatabase(it).noteDao().getAllNotes()
                 notesAdapter.setData(notes)
                 arrNotes = notes as ArrayList<Notes>
                 recycler_view.adapter = notesAdapter
@@ -79,7 +78,7 @@ class HomeFragment : BaseFragment() {
                 val tempArr = ArrayList<Notes>()
 
                 for(arr in arrNotes) {
-                    if(arr.title!!.toLowerCase(Locale.getDefault()).contains(newText.toString())) {
+                    if(arr.title!!.lowercase(Locale.getDefault()).contains(newText.toString())) {
                         tempArr.add(arr)
                     }
                 }
@@ -92,10 +91,11 @@ class HomeFragment : BaseFragment() {
         })
     }
 
+    //sending noteId to createNote to view the note
     private val onClicked = object :NotesAdapter.OnItemClickListener{
         override fun onClicked(noteId: Int) {
-            var fragment :Fragment
-            var bundle = Bundle()
+            val fragment :Fragment
+            val bundle = Bundle()
             bundle.putInt("noteId",noteId)
             fragment = CreateNoteFragment.newInstance()
             fragment.arguments = bundle
@@ -113,9 +113,5 @@ class HomeFragment : BaseFragment() {
             fragmentTransition.setCustomAnimations(android.R.anim.slide_out_right,android.R.anim.slide_in_left)
         }
         fragmentTransition.replace(R.id.frame_layout,fragment).addToBackStack(fragment.javaClass.simpleName).commit()
-    }
-
-    interface onItemClickListener {
-        fun onClicked(notesModel: Notes)
     }
 }

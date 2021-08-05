@@ -10,11 +10,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.PatternMatcher
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,15 +22,11 @@ import com.example.notesapp.entities.Notes
 import com.example.notesapp.util.NoteBottomSheetFragment
 import kotlinx.android.synthetic.main.fragment_create_note.*
 import kotlinx.android.synthetic.main.fragment_create_note.tvDateTime
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.item_rv_notes.*
-import kotlinx.android.synthetic.main.item_rv_notes.view.*
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
 
 class CreateNoteFragment : BaseFragment(),
     EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
@@ -81,7 +74,7 @@ class CreateNoteFragment : BaseFragment(),
             //if yes, then rendering single note on edit note screen
             launch {
                 context?.let {
-                    var notes = NotesDatabase.getDatabase(it).noteDao().getSpecificNote(noteId)
+                    val notes = NotesDatabase.getDatabase(it).noteDao().getSpecificNote(noteId)
 
                     colorView.setBackgroundColor(Color.parseColor(notes.color))
 
@@ -217,32 +210,37 @@ class CreateNoteFragment : BaseFragment(),
 
     private fun saveNote() {
         //checking if entry is valid or not
-        if (etNoteTitle.text.isNullOrEmpty()) {
-            Toast.makeText(context, "Note Title is Required", Toast.LENGTH_SHORT).show()
-        } else if (etNoteSubTitle.text.isNullOrEmpty()) {
-            Toast.makeText(context, "Note Sub Title is Required", Toast.LENGTH_SHORT).show()
-        } else if (etNoteDesc.text.isNullOrEmpty()) {
-            Toast.makeText(context, "Note Description is Required", Toast.LENGTH_SHORT).show()
-        } else {
-            //coroutine to save note in database
-            launch {
-                val notes = Notes()
-                notes.title = etNoteTitle.text.toString()
-                notes.subTitle = etNoteSubTitle.text.toString()
-                notes.noteText = etNoteDesc.text.toString()
-                notes.dateTime = currentDate
-                notes.color = selectedColor
-                notes.imgPath = selectedImagePath
-                notes.webLink = webLink
-                context?.let {
-                    NotesDatabase.getDatabase(it).noteDao().insertNotes(notes)
-                    etNoteDesc.setText("")
-                    etNoteSubTitle.setText("")
-                    etNoteTitle.setText("")
-                    layoutImage.visibility = View.GONE
-                    imgNote.visibility = View.GONE
-                    tvWebLink.visibility = View.GONE
-                    requireActivity().supportFragmentManager.popBackStack()
+        when {
+            etNoteTitle.text.isNullOrEmpty() -> {
+                Toast.makeText(context, "Note Title is Required", Toast.LENGTH_SHORT).show()
+            }
+            etNoteSubTitle.text.isNullOrEmpty() -> {
+                Toast.makeText(context, "Note Sub Title is Required", Toast.LENGTH_SHORT).show()
+            }
+            etNoteDesc.text.isNullOrEmpty() -> {
+                Toast.makeText(context, "Note Description is Required", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                //coroutine to save note in database
+                launch {
+                    val notes = Notes()
+                    notes.title = etNoteTitle.text.toString()
+                    notes.subTitle = etNoteSubTitle.text.toString()
+                    notes.noteText = etNoteDesc.text.toString()
+                    notes.dateTime = currentDate
+                    notes.color = selectedColor
+                    notes.imgPath = selectedImagePath
+                    notes.webLink = webLink
+                    context?.let {
+                        NotesDatabase.getDatabase(it).noteDao().insertNotes(notes)
+                        etNoteDesc.setText("")
+                        etNoteSubTitle.setText("")
+                        etNoteTitle.setText("")
+                        layoutImage.visibility = View.GONE
+                        imgNote.visibility = View.GONE
+                        tvWebLink.visibility = View.GONE
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
                 }
             }
         }
@@ -266,7 +264,7 @@ class CreateNoteFragment : BaseFragment(),
     private val BroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            var actionColor = p1!!.getStringExtra("action")
+            val actionColor = p1!!.getStringExtra("action")
 
             when (actionColor!!) {
                 "Blue" -> {
@@ -343,26 +341,27 @@ class CreateNoteFragment : BaseFragment(),
         }
     }
 
-    private fun pickImageFromGallery() {
-        var intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_IMAGE)
-        }
-    }
-
     @SuppressLint("Recycle")
     private fun getPathFromUri(contentUri: Uri): String? {
-        var filePath: String? = null
-        var cursor = requireActivity().contentResolver.query(contentUri, null, null, null, null)
+        val filePath: String?
+        val cursor = requireActivity().contentResolver.query(contentUri, null, null, null, null)
         if (cursor == null) {
             filePath = contentUri.path
         } else {
             cursor.moveToFirst()
-            var index = cursor.getColumnIndex("_data")
+            val index = cursor.getColumnIndex("_data")
             filePath = cursor.getString(index)
             cursor.close()
         }
         return filePath
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivityForResult(intent, REQUEST_CODE_IMAGE)
+        }
     }
 
     //display image on create note screen
@@ -370,12 +369,12 @@ class CreateNoteFragment : BaseFragment(),
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_IMAGE && resultCode == RESULT_OK) {
             if (data != null) {
-                var selectedImageUrl = data.data
+                val selectedImageUrl = data.data
                 if (selectedImageUrl != null) {
                     try {
-                        var inputStream =
+                        val inputStream =
                             requireActivity().contentResolver.openInputStream(selectedImageUrl)
-                        var bitmap = BitmapFactory.decodeStream(inputStream)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
                         imgNote.setImageBitmap(bitmap)
                         layoutImage.visibility = View.VISIBLE
                         imgNote.visibility = View.VISIBLE

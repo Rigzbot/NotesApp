@@ -11,10 +11,10 @@ import com.example.notesapp.entities.Notes
 import kotlinx.android.synthetic.main.item_rv_notes.view.*
 import kotlin.collections.ArrayList
 
-class NotesAdapter() :
+class NotesAdapter:
     RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
-    var listener:OnItemClickListener? = null
-    var arrList = ArrayList<Notes>()
+    private var listener:OnItemClickListener? = null
+    private var arrList = ArrayList<Notes>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
         return NotesViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_rv_notes,parent,false)

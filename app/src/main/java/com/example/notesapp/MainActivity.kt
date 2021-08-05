@@ -3,8 +3,8 @@ package com.example.notesapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import java.time.zone.ZoneOffsetTransition
 
+@Suppress("SameParameterValue")
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //animation for fragment
-    fun replaceFragment(fragment:Fragment, isTransition: Boolean) {
+    private fun replaceFragment(fragment:Fragment, isTransition: Boolean) {
         val fragmentTransition = supportFragmentManager.beginTransaction()
 
         if(isTransition){
