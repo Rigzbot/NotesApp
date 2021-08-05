@@ -16,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.notesapp.database.NotesDatabase
 import com.example.notesapp.entities.Notes
@@ -33,8 +35,7 @@ class CreateNoteFragment : BaseFragment(),
 
     var selectedColor = "#171C26"
 
-    private var READ_STORAGE_PERM = 123 //storage code
-    private var REQUEST_CODE_IMAGE = 456
+    private var readStoragePerm = 123 //storage code
     private var selectedImagePath = ""
     private var webLink = ""
     private var noteId = -1
@@ -70,7 +71,7 @@ class CreateNoteFragment : BaseFragment(),
         super.onViewCreated(view, savedInstanceState)
 
         //checking if we called for single note
-        if(noteId != -1) {
+        if (noteId != -1) {
             //if yes, then rendering single note on edit note screen
             launch {
                 context?.let {
@@ -83,26 +84,26 @@ class CreateNoteFragment : BaseFragment(),
                     etNoteTitle.setText(notes.title)
 
                     //setting image of note
-                    if (notes.imgPath != ""){
+                    if (notes.imgPath != "") {
                         selectedImagePath = notes.imgPath!!
                         imgNote.setImageBitmap(BitmapFactory.decodeFile(notes.imgPath))
                         layoutImage.visibility = View.VISIBLE
                         imgNote.visibility = View.VISIBLE
                         imgDelete.visibility = View.VISIBLE
-                    }else{
+                    } else {
                         layoutImage.visibility = View.GONE
                         imgNote.visibility = View.GONE
                         imgDelete.visibility = View.GONE
                     }
 
                     //setting link of note
-                    if (notes.webLink != ""){
+                    if (notes.webLink != "") {
                         webLink = notes.webLink!!
                         tvWebLink.text = notes.webLink
                         layoutWebUrl.visibility = View.VISIBLE
                         imgUrlDelete.visibility = View.VISIBLE
                         etWebLink.setText(notes.webLink)
-                    }else{
+                    } else {
                         imgUrlDelete.visibility = View.GONE
                         layoutWebUrl.visibility = View.GONE
                     }
@@ -112,7 +113,7 @@ class CreateNoteFragment : BaseFragment(),
 
         //register broadcast receiver
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
-            BroadcastReceiver, IntentFilter("bottom_sheet_action")
+            broadcastReceiver, IntentFilter("bottom_sheet_action")
         )
 
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
@@ -123,7 +124,7 @@ class CreateNoteFragment : BaseFragment(),
         tvDateTime.text = currentDate
 
         imgDone.setOnClickListener {
-            if(noteId != -1) {
+            if (noteId != -1) {
                 updateNote()
             } else {
                 saveNote()
@@ -154,7 +155,7 @@ class CreateNoteFragment : BaseFragment(),
 
         //on click listener for cancel button for webUrl
         btnCancel.setOnClickListener {
-            if(noteId != -1) {
+            if (noteId != -1) {
                 tvWebLink.visibility = View.VISIBLE
                 layoutWebUrl.visibility = View.GONE
             } else {
@@ -246,22 +247,8 @@ class CreateNoteFragment : BaseFragment(),
         }
     }
 
-    //check if link is valid or not
-    private fun checkWebUrl() {
-        if (Patterns.WEB_URL.matcher(etWebLink.text.toString()).matches()) {
-            layoutWebUrl.visibility = View.GONE
-            etWebLink.isEnabled = false
-            webLink = etWebLink.text.toString()
-
-            tvWebLink.visibility = View.VISIBLE
-            tvWebLink.text = etWebLink.text.toString()
-        } else {
-            Toast.makeText(requireContext(), "Url is not valid", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     //create broadcast receiver to receive actions
-    private val BroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             val actionColor = p1!!.getStringExtra("action")
@@ -316,11 +303,7 @@ class CreateNoteFragment : BaseFragment(),
         }
     }
 
-    override fun onDestroy() {
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(BroadcastReceiver)
-        super.onDestroy()
-    }
-
+    //check if app has read storage perm
     private fun hasReadStoragePerm(): Boolean {
         return EasyPermissions.hasPermissions(
             requireContext(),
@@ -328,6 +311,7 @@ class CreateNoteFragment : BaseFragment(),
         )
     }
 
+    //ask for read storage prem
     private fun readStorageTask() {
         if (hasReadStoragePerm()) {
             pickImageFromGallery()
@@ -335,40 +319,26 @@ class CreateNoteFragment : BaseFragment(),
             EasyPermissions.requestPermissions(
                 requireActivity(),
                 getString(R.string.storage_permission_text),
-                READ_STORAGE_PERM,
+                readStoragePerm,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE
             )
         }
     }
 
-    @SuppressLint("Recycle")
-    private fun getPathFromUri(contentUri: Uri): String? {
-        val filePath: String?
-        val cursor = requireActivity().contentResolver.query(contentUri, null, null, null, null)
-        if (cursor == null) {
-            filePath = contentUri.path
-        } else {
-            cursor.moveToFirst()
-            val index = cursor.getColumnIndex("_data")
-            filePath = cursor.getString(index)
-            cursor.close()
-        }
-        return filePath
-    }
-
+    //picking image from galley using implicit intent
     @SuppressLint("QueryPermissionsNeeded")
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_IMAGE)
+            resultLauncher.launch(intent)
         }
     }
 
-    //display image on create note screen
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_IMAGE && resultCode == RESULT_OK) {
-            if (data != null) {
+    //rendering image on create note
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val data: Intent = result.data!!
                 val selectedImageUrl = data.data
                 if (selectedImageUrl != null) {
                     try {
@@ -386,6 +356,35 @@ class CreateNoteFragment : BaseFragment(),
                 }
             }
         }
+
+    //check if link is valid or not
+    private fun checkWebUrl() {
+        if (Patterns.WEB_URL.matcher(etWebLink.text.toString()).matches()) {
+            layoutWebUrl.visibility = View.GONE
+            etWebLink.isEnabled = false
+            webLink = etWebLink.text.toString()
+
+            tvWebLink.visibility = View.VISIBLE
+            tvWebLink.text = etWebLink.text.toString()
+        } else {
+            Toast.makeText(requireContext(), "Url is not valid", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //extract path from the uri of image
+    @SuppressLint("Recycle")
+    private fun getPathFromUri(contentUri: Uri): String? {
+        val filePath: String?
+        val cursor = requireActivity().contentResolver.query(contentUri, null, null, null, null)
+        if (cursor == null) {
+            filePath = contentUri.path
+        } else {
+            cursor.moveToFirst()
+            val index = cursor.getColumnIndex("_data")
+            filePath = cursor.getString(index)
+            cursor.close()
+        }
+        return filePath
     }
 
     override fun onRequestPermissionsResult(
@@ -419,5 +418,10 @@ class CreateNoteFragment : BaseFragment(),
 
     override fun onRationaleDenied(requestCode: Int) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver)
+        super.onDestroy()
     }
 }
