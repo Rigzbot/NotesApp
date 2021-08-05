@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="ThemeOverlay.search" parent="AppTheme">
+
+        <!-- Text color -->
+        <item name="android:editTextColor">@color/colorWhite</item>
+        <!-- Hint text color -->
+        <item name="android:textColorHint">@color/colorGray</item>
+
+    </style>
+
+    <style name="buttonStyle">
+        <item name="android:background">@color/colorAccent</item>
+    </style>
+
+</resources>

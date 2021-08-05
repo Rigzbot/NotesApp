@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/activity_main.xml" value="0.18085106382978725" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_create_note.xml" value="0.33" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_home.xml" value="0.33" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/fragment_notes_bottom_sheet.xml" value="0.33" />
+        <entry key="..\:/Android Development/Kotlin Projects/NotesApp/app/src/main/res/layout/item_rv_notes.xml" value="0.383634431455898" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
